@@ -1,0 +1,9 @@
+drop table if exists todos;
+
+CREATE TABLE `todos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(45) NOT NULL,
+  `contents` varchar(200) NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+  );
