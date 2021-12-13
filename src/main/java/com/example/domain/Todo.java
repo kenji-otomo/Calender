@@ -1,7 +1,5 @@
 package com.example.domain;
 
-import java.time.LocalDateTime;
-
 public class Todo {
 
 	private Integer id;
@@ -10,7 +8,7 @@ public class Todo {
 
 	private String contents;
 	
-	private LocalDateTime date;
+	private String date;
 
 	
 	
@@ -39,11 +37,11 @@ public class Todo {
 		this.contents = contents;
 	}
 
-	public LocalDateTime getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>用事</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">
+            <a th:href="@{/calender}" class="text-reset text-decoration-none">カレンダー</a>
+        </h1>
+        <div class="row justify-content-md-center">
+            <h2 class="col-auto"><a class="text-reset text-decoration-none" th:href="@{'/todo/otherDay?year=' + ${year} + '&month=' + ${month} + '&day=' + ${day} +'&add=-1'}">&lt;</a></h2>
+            <h2 class="col-auto text-center" th:text="${year}+年+${month}+月+${day}+日">今の年月</h2>
+            <h2 class="col-auto"><a class="text-reset text-decoration-none" th:href="@{'/todo/otherDay?year=' + ${year} + '&month=' + ${month} + '&day=' + ${day} +'&add=1'}">&gt;</a></h2>
+        </div>
+        <br>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>タイトル</th>
+                    <th>内容</th>
+                    <th>時間</th>
+                </tr>
+            </thead>
+            <tr th:each="todo : ${todoList}">
+                <td th:text="${todo.title}">タイトル</td>
+                <td><pre th:text="${todo.contents}">コンテンツ</pre></td>
+                <td th:text="${todo.date}">時間</td>
+            </tr>
+        </table>
+        <br>
+        <form th:action="@{/todo/addTodo}" method="post" th:object="${addTodoForm}">
+
+            <div class="row g-3 align-items-center">
+                <div class="col-1">
+                  <label for="title" class="col-form-label">Title</label>
+                </div>
+                <div class="col-auto">
+                  <input type="text" th:field="*{title}" class="form-control" id="title">
+                </div>
+                <div class="col-auto">
+                  <span th:errors="*{title}" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-1">
+                    <label for="contents" class="col-form-label">Contents</label>
+                </div>
+                <div class="col-auto">
+                    <textarea th:field="*{contents}" cols="30" rows="10" class="form-control" id="contents"></textarea>
+                </div>
+                <div class="col-auto">
+                    <div th:errors="*{contents}" class="text-danger">エラー</div>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-1">
+                    <label for="time" class="col-form-label">Time</label>
+                </div>
+                <div class="col-auto">
+                    <input type="time" th:field="*{time}" class="form-control">
+                </div>
+                <div class="col-auto">
+                </div>
+            </div>
+            <input type="hidden" name="year" th:value="${year}">
+            <input type="hidden" name="month" th:value="${month}">
+            <input type="hidden" name="day" th:value="${day}">
+            <button>追加</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>タイトル</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">
+            <a th:href="@{/calender}" class="text-reset text-decoration-none">カレンダー</a>
+        </h1>
+        <div class="row justify-content-md-center">
+            <h2 class="col-auto"><a class="text-reset text-decoration-none" th:href="@{'/calender/otherMonth?year=' + ${year} + '&month=' + ${month} +'&add=-1'}">&lt;</a></h2>
+            <h2 class="col-auto text-center" th:text="${year}+年+${month}+月">今の年月</h2>
+            <h2 class="col-auto"><a class="text-reset text-decoration-none" th:href="@{'/calender/otherMonth?year=' + ${year} + '&month=' + ${month} +'&add=1'}">&gt;</a></h2>
+        </div>
+        <br>
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th class="text-danger">SUN</th>
+                    <th>MON</th>
+                    <th>TUE</th>
+                    <th>WED</th>
+                    <th>THU</th>
+                    <th>FRI</th>
+                    <th class="text-primary">SAT</th>
+                </tr>
+            </thead>
+            <tr>
+                <td th:each="day, dayStat: ${dayList1}" class="text-center justify-content-md-center">
+                    <div class="card" th:if="${day.day}!=0" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td th:each="day : ${dayList2}" class="text-center justify-content-md-center">
+                    <div class="card" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td th:each="day : ${dayList3}" class="text-center">
+                    <div class="card" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td th:each="day : ${dayList4}" class="text-center">
+                    <div class="card" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td th:each="day : ${dayList5}" class="text-center">
+                    <div class="card" th:if="${day.day}!=0" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${dayList6}">
+                <td th:each="day : ${dayList6}" class="text-center">
+                    <div class="card" th:if="${day.day}!=0" style="width: 8rem;">
+                        <a th:href="@{'/todo?year='+${year}+'&month='+${month}+'&day='+${day.day}}" class="text-reset text-decoration-none">
+                            <span class="card-header text-center text-white" th:text="${day.day}"
+                             th:classappend="${(dayStat.count == 1 ? ' bg-danger' : ' normal-day') + (dayStat.count == 7 ? ' bg-primary' : '')}">日</span>
+                            <span class="card-body">
+                                <span class="text-start" th:each="todo : ${day.todoList}">
+                                    <span class="badge bg-primary text-wrap" style="width: 6rem;" th:text="${todo.title}"></span><br>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
