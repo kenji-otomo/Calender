@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.repository.TodoMapper">
+  <select id="searchById" resultType="com.example.domain.Todo">
+	SELECT * FROM todos WHERE id = #{id}
+  </select>
+  <select id="searchListByDate" resultType="com.example.domain.Todo">
+  	SELECT * FROM todos WHERE date LIKE '${date}%' ORDER BY date
+  </select>
+  <select id="searchAll" resultType="com.example.domain.Todo">
+  	SELECT * FROM todos
+  </select>
+  <insert id="addTodo">
+  	INSERT INTO todos (title,contents,date) VALUES (#{title},#{contents},#{date})
+  </insert>
+</mapper>

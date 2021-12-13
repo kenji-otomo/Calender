@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.normal-day{
+    background-color: #a09e9e;
+}
+
+.card-header{
+    display: block;
+}
