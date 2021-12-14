@@ -101,6 +101,8 @@ public class CalenderController {
 			model.addAttribute("dayList6", dayList6);
 		}
 		
+		
+		
 		return "home";
 	}
 	
