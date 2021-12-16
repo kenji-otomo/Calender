@@ -9,6 +9,9 @@
   <select id="searchListByDate" resultType="com.example.domain.Todo">
   	SELECT * FROM todos WHERE date LIKE '${date}%' ORDER BY date
   </select>
+  <select id="searchListByMonth" resultType="com.example.domain.Todo">
+  	SELECT * FROM todos WHERE date LIKE '${month}%' ORDER BY update_time DESC
+  </select>
   <select id="searchAll" resultType="com.example.domain.Todo">
   	SELECT * FROM todos
   </select>

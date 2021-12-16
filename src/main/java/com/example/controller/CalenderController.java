@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -15,6 +17,9 @@ import com.example.domain.Todo;
 import com.example.form.OtherMonthForm;
 import com.example.form.TodoForm;
 import com.example.repository.TodoMapper;
+import com.example.service.CalenderService;
+import com.example.service.GoogleCalendarService;
+import com.google.api.services.calendar.model.Event;
 
 @Controller
 @RequestMapping("/calender")
@@ -23,6 +28,11 @@ public class CalenderController {
 	@Autowired
 	private TodoMapper todoMapper;
 	
+	@Autowired
+	private GoogleCalendarService googleCalendarService;
+	
+	@Autowired
+	private CalenderService calenderService;
 	
 	@ModelAttribute
 	public TodoForm setUpTodoForm() {
@@ -35,17 +45,18 @@ public class CalenderController {
 	}
 
 	@RequestMapping("")
-	public String home(Model model) {
+	public String home(Model model) throws IOException, GeneralSecurityException {
 		
 		Calendar calendar = Calendar.getInstance();
 		
 		calendar.set(Calendar.DATE, 1);
 		
 		Integer year = calendar.get(Calendar.YEAR);
+		
 		Integer month = calendar.get(Calendar.MONTH) + 1;
 		
 		Integer beforeBlank = calendar.get(Calendar.DAY_OF_WEEK)-1;
-		Integer lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		Integer lastDayInteger = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		List<Day>dayList1 = new ArrayList<>();
 		List<Day>dayList2 = new ArrayList<>();
@@ -58,7 +69,7 @@ public class CalenderController {
 			String str = "0";
 			String dayString = "0";
 			
-			if (i >= beforeBlank && i + 1 - beforeBlank <= lastDay) {
+			if (i >= beforeBlank && i + 1 - beforeBlank <= lastDayInteger) {
 				str = String.valueOf( i + 1 - beforeBlank);
 				dayString = String.valueOf( i + 1 - beforeBlank);
 			}
@@ -97,17 +108,58 @@ public class CalenderController {
 		model.addAttribute("dayList4", dayList4);
 		model.addAttribute("dayList5", dayList5);
 		
-		if ((beforeBlank == 5 && lastDay >= 31)||(beforeBlank == 6 && lastDay >= 30)) {
+		if ((beforeBlank == 5 && lastDayInteger >= 31)||(beforeBlank == 6 && lastDayInteger >= 30)) {
 			model.addAttribute("dayList6", dayList6);
 		}
 		
+		String searchMonth = String.valueOf(year)+"-"+String.valueOf(month);
 		
+		System.out.println(searchMonth);
+		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
+		System.out.println(searchList);
+		System.out.println("----------------");
+
+		String setCalMonth = String.valueOf(month);
+		if (month < 10) {
+			setCalMonth = "0" + setCalMonth;
+		}
+		
+		String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+		String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+		
+		List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
+		List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
+		
+		if (holidayList.isEmpty()) {
+			System.out.println("ないです");
+		}else {
+			for (Event event : holidayList) {
+				Todo todo = new Todo();
+				todo.setTitle(event.getSummary());
+				todo.setContents(event.getCreator().getDisplayName());
+				todo.setDate(event.getStart().getDate().toString()+"00:00:00");
+				System.out.println(todo);
+			}
+		}
+		System.out.println(eventList);
+		
+		if (eventList.isEmpty()) {
+			System.out.println("ないです");
+		}else {
+			for (Event event : eventList) {
+				Todo todo = new Todo();
+				todo.setTitle(event.getSummary());
+				todo.setContents(event.getDescription());
+				todo.setDate(event.getStart().getDateTime().toString());
+				System.out.println(todo);
+			}
+		}
 		
 		return "home";
 	}
 	
 	@RequestMapping("/otherMonth")
-	public String otherMonth(OtherMonthForm form, Model model) {
+	public String otherMonth(OtherMonthForm form, Model model) throws IOException, GeneralSecurityException {
 		
 		Integer setYear = Integer.parseInt(form.getYear());
 		Integer setMonth =Integer.parseInt(form.getMonth());
@@ -124,7 +176,7 @@ public class CalenderController {
 		Integer month = calendar.get(Calendar.MONTH) + 1;
 		
 		Integer beforeBlank = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-		Integer lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		Integer lastDayInteger = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		List<Day>dayList1 = new ArrayList<>();
 		List<Day>dayList2 = new ArrayList<>();
@@ -137,7 +189,7 @@ public class CalenderController {
 			String str = "0";
 			String dayString = "0";
 			
-			if (i >= beforeBlank && i + 1 - beforeBlank <= lastDay) {
+			if (i >= beforeBlank && i + 1 - beforeBlank <= lastDayInteger) {
 				str = String.valueOf( i + 1 - beforeBlank);
 				dayString = String.valueOf( i + 1 - beforeBlank);
 			}
@@ -176,10 +228,53 @@ public class CalenderController {
 		model.addAttribute("dayList4", dayList4);
 		model.addAttribute("dayList5", dayList5);
 		
-		if ((beforeBlank == 5 && lastDay >= 31)||(beforeBlank == 6 && lastDay >= 30)) {
+		if ((beforeBlank == 5 && lastDayInteger >= 31)||(beforeBlank == 6 && lastDayInteger >= 30)) {
 			model.addAttribute("dayList6", dayList6);
 		}
 		
+		
+		String searchMonth = String.valueOf(year)+"-"+String.valueOf(month);
+		
+		System.out.println(searchMonth);
+		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
+		System.out.println(searchList);
+		System.out.println("----------------");
+		
+		String setCalMonth = String.valueOf(month);
+		if (month < 10) {
+			setCalMonth = "0" + setCalMonth;
+		}
+
+		String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+		String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+		
+		List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
+		List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
+		
+		if (holidayList.isEmpty()) {
+			System.out.println("ないです");
+		}else {
+			for (Event event : holidayList) {
+				Todo todo = new Todo();
+				todo.setTitle(event.getSummary());
+				todo.setContents(event.getCreator().getDisplayName());
+				todo.setDate(event.getStart().getDate().toString()+"00:00:00");
+				System.out.println(todo);
+			}
+		}
+		
+		if (eventList.isEmpty()) {
+			System.out.println("ないです");
+		}else {
+			for (Event event : eventList) {
+				Todo todo = new Todo();
+				todo.setTitle(event.getSummary());
+				todo.setContents(event.getDescription());
+				todo.setDate(event.getStart().getDateTime().toString());
+				System.out.println(todo);
+			}
+		}
+
 		return "home";
 	}
 }
