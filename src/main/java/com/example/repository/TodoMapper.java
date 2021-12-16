@@ -13,6 +13,8 @@ public interface TodoMapper {
 		
 	public List<Todo> searchListByDate(String date);
 	
+	public List<Todo> searchListByMonth(String month);
+
 	public List<Todo> searchAll();
 	
 	public void addTodo(Todo todo);
