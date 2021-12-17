@@ -43,7 +43,13 @@ public class TodoController {
 			day = "0"+day;
 		}
 		
-		String datetime = form.getYear()+"-"+form.getMonth()+"-"+day;
+		String month = form.getMonth();
+		
+		if (Integer.parseInt(month) < 10) {
+			month = "0"+month;
+		}
+		
+		String datetime = form.getYear()+"-"+month+"-"+day;
 		
 		List<Todo>todoList = todoMapper.searchListByDate(datetime);
 		

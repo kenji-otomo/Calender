@@ -10,7 +10,7 @@ public class Todo {
 	
 	private String date;
 
-	
+	private String updatetime;
 	
 	
 	public Integer getId() {
@@ -45,9 +45,18 @@ public class Todo {
 		this.date = date;
 	}
 
+	public String getUpdateTime() {
+		return updatetime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updatetime = updateTime;
+	}
+
 	@Override
 	public String toString() {
-		return "Todo [id=" + id + ", title=" + title + ", contents=" + contents + ", date=" + date + "]";
+		return "Todo [id=" + id + ", title=" + title + ", contents=" + contents + ", date=" + date + ", updateTime="
+				+ updatetime + "]";
 	}
 	
 	

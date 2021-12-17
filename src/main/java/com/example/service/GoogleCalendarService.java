@@ -100,8 +100,32 @@ public class GoogleCalendarService {
 	        .setOrderBy("startTime").setSingleEvents(true)
 	        .execute();
 	    List<Event> items = events.getItems();
-	    
 	    return items;
+	  }
+	  
+	  public List<Event> holidayUpdate(String firstDay,String lastDay,String updateTime)
+			  throws IOException, GeneralSecurityException {
+		  // Build a new authorized API client service.
+		  final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
+				  .newTrustedTransport();
+		  Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+				  getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME)
+				  .build();
+		  System.out.println(service.getBaseUrl());
+		  // List the next 10 events from the primary calendar.
+		  DateTime firstday = new DateTime(firstDay);
+		  DateTime lastday = new DateTime(lastDay);
+		  DateTime updatetime = new DateTime(updateTime);
+		  
+		  //?fields=updated,summary,description,creator(displayName),start(date,dateTime)
+		  
+		  Events events = service.events().list("japanese__ja@holiday.calendar.google.com")
+				
+				  .setTimeMin(firstday).setTimeMax(lastday).setUpdatedMin(updatetime)
+				  .setOrderBy("startTime").setSingleEvents(true)
+				  .execute();
+		  List<Event> items = events.getItems();
+		  return items;
 	  }
 	  
 	  public List<Event> myEvent(String firstDay,String lastDay)
@@ -126,4 +150,27 @@ public class GoogleCalendarService {
 		  return myItems;
 	  }
 
+	  public List<Event> myEventUpdate(String firstDay,String lastDay,String updateTime)
+			  throws IOException, GeneralSecurityException {
+		  // Build a new authorized API client service.
+		  final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
+				  .newTrustedTransport();
+		  Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+				  getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME)
+				  .build();
+		  
+		  // List the next 10 events from the primary calendar.
+		  DateTime firstday = new DateTime(firstDay);
+		  DateTime lastday = new DateTime(lastDay);
+		  DateTime updatetime = new DateTime(updateTime);
+		  
+		  Events myEvents = service.events().list("primary")
+				  .setTimeMin(firstday).setTimeMax(lastday).setUpdatedMin(updatetime)
+				  .setOrderBy("startTime").setSingleEvents(true)
+			//	  .setFields("summary,description,updated,start")
+				  .execute();
+		  List<Event> myItems = myEvents.getItems();
+		  return myItems;
+	  }
+	  
 }
