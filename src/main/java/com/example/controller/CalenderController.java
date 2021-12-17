@@ -58,6 +58,88 @@ public class CalenderController {
 		Integer beforeBlank = calendar.get(Calendar.DAY_OF_WEEK)-1;
 		Integer lastDayInteger = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
+		
+
+		String searchMonth = String.valueOf(year)+"-"+String.valueOf(month);
+		
+		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
+		
+		if (searchList.isEmpty()) {
+
+			String setCalMonth = String.valueOf(month);
+			if (month < 10) {
+				setCalMonth = "0" + setCalMonth;
+			}
+			
+			String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+			String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+			
+			List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
+			List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
+			
+			if (holidayList.isEmpty()) {
+				System.out.println("祝日ないです");
+			}else {
+				for (Event event : holidayList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getCreator().getDisplayName());
+					todo.setDate(event.getStart().getDate().toString()+" 00:00:00");
+					calenderService.addTodo(todo);
+				}
+			}
+			
+			if (eventList.isEmpty()) {
+				System.out.println("予定ないです");
+			}else {
+				for (Event event : eventList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getDescription());
+					todo.setDate(event.getStart().getDateTime().toString());
+					calenderService.addTodo(todo);
+				}
+			}
+
+		}else {
+
+			String setCalMonth = String.valueOf(month);
+			if (month < 10) {
+				setCalMonth = "0" + setCalMonth;
+			}
+			
+			String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+			String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+			String updateTime = searchList.get(0).getUpdateTime();
+			updateTime = updateTime.replace(" ", "T")+"+09:00";
+			List<Event> holidayList = googleCalendarService.holidayUpdate(firstDay,lastDay,updateTime);
+			List<Event> eventList = googleCalendarService.myEventUpdate(firstDay,lastDay,updateTime);
+			
+			if (holidayList.isEmpty()) {
+				System.out.println("祝日追加ないです");
+			}else {
+				for (Event event : holidayList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getCreator().getDisplayName());
+					todo.setDate(event.getStart().getDate().toString()+" 00:00:00");
+					calenderService.addTodo(todo);
+				}
+			}
+			
+			if (eventList.isEmpty()) {
+				System.out.println("予定追加ないです");
+			}else {
+				for (Event event : eventList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getDescription());
+					todo.setDate(event.getStart().getDateTime().toString());
+					calenderService.addTodo(todo);
+				}
+			}
+		}
+		
 		List<Day>dayList1 = new ArrayList<>();
 		List<Day>dayList2 = new ArrayList<>();
 		List<Day>dayList3 = new ArrayList<>();
@@ -80,7 +162,6 @@ public class CalenderController {
 			String datetime = String.valueOf(year)+"-"+String.valueOf(month)+"-"+dayString;
 			
 			List<Todo>todoList = todoMapper.searchListByDate(datetime);
-			
 			Day day = new Day();
 			day.setDay(str);
 			day.setTodoList(todoList);
@@ -111,51 +192,7 @@ public class CalenderController {
 		if ((beforeBlank == 5 && lastDayInteger >= 31)||(beforeBlank == 6 && lastDayInteger >= 30)) {
 			model.addAttribute("dayList6", dayList6);
 		}
-		
-		String searchMonth = String.valueOf(year)+"-"+String.valueOf(month);
-		
-		System.out.println(searchMonth);
-		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
-		System.out.println(searchList);
-		System.out.println("----------------");
-
-		String setCalMonth = String.valueOf(month);
-		if (month < 10) {
-			setCalMonth = "0" + setCalMonth;
-		}
-		
-		String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
-		String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
-		
-		List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
-		List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
-		
-		if (holidayList.isEmpty()) {
-			System.out.println("ないです");
-		}else {
-			for (Event event : holidayList) {
-				Todo todo = new Todo();
-				todo.setTitle(event.getSummary());
-				todo.setContents(event.getCreator().getDisplayName());
-				todo.setDate(event.getStart().getDate().toString()+"00:00:00");
-				System.out.println(todo);
-			}
-		}
-		System.out.println(eventList);
-		
-		if (eventList.isEmpty()) {
-			System.out.println("ないです");
-		}else {
-			for (Event event : eventList) {
-				Todo todo = new Todo();
-				todo.setTitle(event.getSummary());
-				todo.setContents(event.getDescription());
-				todo.setDate(event.getStart().getDateTime().toString());
-				System.out.println(todo);
-			}
-		}
-		
-		return "home";
+				return "home";
 	}
 	
 	@RequestMapping("/otherMonth")
@@ -178,6 +215,81 @@ public class CalenderController {
 		Integer beforeBlank = calendar.get(Calendar.DAY_OF_WEEK) - 1;
 		Integer lastDayInteger = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
+		
+
+		String setCalMonth = String.valueOf(month);
+		if (month < 10) {
+			setCalMonth = "0" + setCalMonth;
+		}
+		String searchMonth = String.valueOf(year)+"-"+setCalMonth;
+		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
+		
+		if (searchList.isEmpty()) {
+
+			String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+			String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+			
+			List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
+			List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
+			
+			if (holidayList.isEmpty()) {
+				System.out.println("祝日ないです");
+			}else {
+				for (Event event : holidayList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getCreator().getDisplayName());
+					todo.setDate(event.getStart().getDate().toString()+" 00:00:00");
+					calenderService.addTodo(todo);
+				}
+			}
+			
+			if (eventList.isEmpty()) {
+				System.out.println("予定ないです");
+			}else {
+				for (Event event : eventList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getDescription());
+					todo.setDate(event.getStart().getDateTime().toString());
+					calenderService.addTodo(todo);
+				}
+			}
+					
+			}else {
+
+			String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
+			String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
+			String updateTime = searchList.get(0).getUpdateTime();
+			updateTime = updateTime.replace(" ", "T")+"+09:00";
+			List<Event> holidayList = googleCalendarService.holidayUpdate(firstDay,lastDay,updateTime);
+			List<Event> eventList = googleCalendarService.myEventUpdate(firstDay,lastDay,updateTime);
+			
+			if (holidayList.isEmpty()) {
+				System.out.println("祝日追加ないです");
+			}else {
+				for (Event event : holidayList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getCreator().getDisplayName());
+					todo.setDate(event.getStart().getDate().toString()+" 00:00:00");
+					calenderService.addTodo(todo);
+				}
+			}
+			
+			if (eventList.isEmpty()) {
+				System.out.println("予定追加ないです");
+			}else {
+				for (Event event : eventList) {
+					Todo todo = new Todo();
+					todo.setTitle(event.getSummary());
+					todo.setContents(event.getDescription());
+					todo.setDate(event.getStart().getDateTime().toString());
+					calenderService.addTodo(todo);
+				}
+			}
+		}
+		
 		List<Day>dayList1 = new ArrayList<>();
 		List<Day>dayList2 = new ArrayList<>();
 		List<Day>dayList3 = new ArrayList<>();
@@ -197,10 +309,9 @@ public class CalenderController {
 			if (Integer.parseInt(str) < 10) {
 				dayString = "0"+str;
 			}
-			String datetime = String.valueOf(year)+"-"+String.valueOf(month)+"-"+dayString;
+			String datetime = String.valueOf(year)+"-"+setCalMonth+"-"+dayString;
 			
 			List<Todo>todoList = todoMapper.searchListByDate(datetime);
-			
 			Day day = new Day();
 			day.setDay(str);
 			day.setTodoList(todoList);
@@ -231,50 +342,8 @@ public class CalenderController {
 		if ((beforeBlank == 5 && lastDayInteger >= 31)||(beforeBlank == 6 && lastDayInteger >= 30)) {
 			model.addAttribute("dayList6", dayList6);
 		}
-		
-		
-		String searchMonth = String.valueOf(year)+"-"+String.valueOf(month);
-		
-		System.out.println(searchMonth);
-		List<Todo> searchList = calenderService.searchListByMonth(searchMonth);
-		System.out.println(searchList);
-		System.out.println("----------------");
-		
-		String setCalMonth = String.valueOf(month);
-		if (month < 10) {
-			setCalMonth = "0" + setCalMonth;
-		}
-
-		String firstDay = String.valueOf(year)+"-"+setCalMonth+"-01T00:00:00+09:00";
-		String lastDay = String.valueOf(year)+"-"+setCalMonth+"-"+String.valueOf(lastDayInteger)+"T23:59:59+09:00";
-		
-		List<Event> holidayList = googleCalendarService.holiday(firstDay,lastDay);
-		List<Event> eventList = googleCalendarService.myEvent(firstDay,lastDay);
-		
-		if (holidayList.isEmpty()) {
-			System.out.println("ないです");
-		}else {
-			for (Event event : holidayList) {
-				Todo todo = new Todo();
-				todo.setTitle(event.getSummary());
-				todo.setContents(event.getCreator().getDisplayName());
-				todo.setDate(event.getStart().getDate().toString()+"00:00:00");
-				System.out.println(todo);
-			}
-		}
-		
-		if (eventList.isEmpty()) {
-			System.out.println("ないです");
-		}else {
-			for (Event event : eventList) {
-				Todo todo = new Todo();
-				todo.setTitle(event.getSummary());
-				todo.setContents(event.getDescription());
-				todo.setDate(event.getStart().getDateTime().toString());
-				System.out.println(todo);
-			}
-		}
-
 		return "home";
-	}
+		
+		}
+		
 }
