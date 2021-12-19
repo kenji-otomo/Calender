@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -81,8 +82,7 @@ public class GoogleCalendarService {
 	  }
 
 	  
-	  
-	  public List<Event> holiday(String firstDay,String lastDay)
+	  public List<List<Event>> getEvent(String firstDay,String lastDay)
 	      throws IOException, GeneralSecurityException {
 	    // Build a new authorized API client service.
 	    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
@@ -95,15 +95,26 @@ public class GoogleCalendarService {
 	    DateTime firstday = new DateTime(firstDay);
 	    DateTime lastday = new DateTime(lastDay);
 	    
-	    Events events = service.events().list("japanese__ja@holiday.calendar.google.com")
-	        .setTimeMin(firstday).setTimeMax(lastday)
-	        .setOrderBy("startTime").setSingleEvents(true)
-	        .execute();
-	    List<Event> items = events.getItems();
+	    Events holidayEvents = service.events().list("japanese__ja@holiday.calendar.google.com")
+				  .setMaxResults(10).setFields("summary,description,items(summary,start,creator)")
+				  .setTimeMin(firstday).setTimeMax(lastday)
+				  .setOrderBy("startTime").setSingleEvents(true)
+				  .execute();
+
+		  Events myEvents = service.events().list("primary")
+				  .setMaxResults(10).setFields("summary,description,items(summary,start,creator)")
+				  .setTimeMin(firstday).setTimeMax(lastday)
+				  .setOrderBy("startTime").setSingleEvents(true)
+				  .execute();
+		  List<Event> holidayItems = holidayEvents.getItems();
+		  List<Event> myItems = myEvents.getItems();
+		  List<List<Event>> items = new ArrayList<>();
+		  items.add(holidayItems);
+		  items.add(myItems);
 	    return items;
 	  }
 	  
-	  public List<Event> holidayUpdate(String firstDay,String lastDay,String updateTime)
+	  public List<List<Event>> eventUpdate(String firstDay,String lastDay,String updateTime)
 			  throws IOException, GeneralSecurityException {
 		  // Build a new authorized API client service.
 		  final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
@@ -111,66 +122,29 @@ public class GoogleCalendarService {
 		  Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY,
 				  getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME)
 				  .build();
-		  System.out.println(service.getBaseUrl());
 		  // List the next 10 events from the primary calendar.
 		  DateTime firstday = new DateTime(firstDay);
 		  DateTime lastday = new DateTime(lastDay);
 		  DateTime updatetime = new DateTime(updateTime);
 		  
 		  //?fields=updated,summary,description,creator(displayName),start(date,dateTime)
-		  
-		  Events events = service.events().list("japanese__ja@holiday.calendar.google.com")
-				
+		  Events holidayEvents = service.events().list("japanese__ja@holiday.calendar.google.com")
+				  .setMaxResults(10).setFields("summary,description,items(summary,start,creator)")
 				  .setTimeMin(firstday).setTimeMax(lastday).setUpdatedMin(updatetime)
 				  .setOrderBy("startTime").setSingleEvents(true)
 				  .execute();
-		  List<Event> items = events.getItems();
+
+		  Events myEvents = service.events().list("primary")
+				  .setMaxResults(10).setFields("summary,description,items(summary,start,creator)")
+				  .setTimeMin(firstday).setTimeMax(lastday).setUpdatedMin(updatetime)
+				  .setOrderBy("startTime").setSingleEvents(true)
+				  .execute();
+		  List<Event> holidayItems = holidayEvents.getItems();
+		  List<Event> myItems = myEvents.getItems();
+		  List<List<Event>> items = new ArrayList<>();
+		  items.add(holidayItems);
+		  items.add(myItems);
+		  System.out.println("ここだ！！！");
 		  return items;
 	  }
-	  
-	  public List<Event> myEvent(String firstDay,String lastDay)
-			  throws IOException, GeneralSecurityException {
-		  // Build a new authorized API client service.
-		  final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
-				  .newTrustedTransport();
-		  Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				  getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME)
-				  .build();
-		  
-		  // List the next 10 events from the primary calendar.
-		  DateTime firstday = new DateTime(firstDay);
-		  DateTime lastday = new DateTime(lastDay);
-		    
-		  Events myEvents = service.events().list("primary")
-				  .setTimeMin(firstday).setTimeMax(lastday)
-				  .setOrderBy("startTime").setSingleEvents(true)
-				  .execute();
-		  List<Event> myItems = myEvents.getItems();
-		  
-		  return myItems;
-	  }
-
-	  public List<Event> myEventUpdate(String firstDay,String lastDay,String updateTime)
-			  throws IOException, GeneralSecurityException {
-		  // Build a new authorized API client service.
-		  final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport
-				  .newTrustedTransport();
-		  Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				  getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME)
-				  .build();
-		  
-		  // List the next 10 events from the primary calendar.
-		  DateTime firstday = new DateTime(firstDay);
-		  DateTime lastday = new DateTime(lastDay);
-		  DateTime updatetime = new DateTime(updateTime);
-		  
-		  Events myEvents = service.events().list("primary")
-				  .setTimeMin(firstday).setTimeMax(lastday).setUpdatedMin(updatetime)
-				  .setOrderBy("startTime").setSingleEvents(true)
-			//	  .setFields("summary,description,updated,start")
-				  .execute();
-		  List<Event> myItems = myEvents.getItems();
-		  return myItems;
-	  }
-	  
 }
